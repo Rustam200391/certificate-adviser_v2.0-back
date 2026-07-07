@@ -1,2 +1,6 @@
 databaseChangeLog:
   - logicalFilePath: db/changelog/db.changelog-master.yaml
+
+  - include:
+      file: db/changelog/changeset/001-create-certificates-table.yaml
+      relativeToChangelogFile: false

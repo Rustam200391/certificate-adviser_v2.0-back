@@ -34,6 +34,6 @@ public class Certificate {
     @Column(name = "doctor_specialization", length = 150)
     private String doctorSpecialization;
 
-    @Column(name = "certificate_data", columnDefinition = "TEXT")
-    private String certificateData; // base64-encoded image
+    @Column(name = "cert_image")
+    private byte[] certificateData;
 }

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.certbackend.repository.CertificateRepository;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,14 +31,13 @@ public class CertificateService {
     }
 
     /** Persist a new certificate from DTO. */
-    public Certificate save(CertificateCreateDto dto) {
+    public Certificate save(CertificateCreateDto dto, MultipartFile file) {
         Certificate certificate = new Certificate();
         certificate.setPatientFirstName(dto.getPatientFirstName());
         certificate.setPatientLastName(dto.getPatientLastName());
         certificate.setDoctorFirstName(dto.getDoctorFirstName());
         certificate.setDoctorLastName(dto.getDoctorLastName());
         certificate.setDoctorSpecialization(dto.getDoctorSpecialization());
-        certificate.setCertificateData(dto.getCertificateData());
         return repository.save(certificate);
     }
 
