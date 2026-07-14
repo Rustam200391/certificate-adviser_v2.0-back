@@ -47,7 +47,7 @@ public class CertificateController {
     @PostMapping
     public ResponseEntity<Certificate> create(@Valid @RequestPart CertificateCreateDto dto,
                                               @RequestParam MultipartFile file) {
-        Certificate saved = service.save(dto);
+        Certificate saved = service.save(dto, file);
         return ResponseEntity.ok(saved);
     }
 

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.certbackend.repository.CertificateRepository;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +39,11 @@ public class CertificateService {
         certificate.setDoctorFirstName(dto.getDoctorFirstName());
         certificate.setDoctorLastName(dto.getDoctorLastName());
         certificate.setDoctorSpecialization(dto.getDoctorSpecialization());
+        try {
+            certificate.setCertificateData(file.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return repository.save(certificate);
     }
 
