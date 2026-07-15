@@ -70,5 +70,6 @@ class CertificateControllerIntegrationTest {
         assertThat(saved.getDoctorFirstName()).isEqualTo("Пётр");
         assertThat(saved.getDoctorLastName()).isEqualTo("Петров");
         assertThat(saved.getDoctorSpecialization()).isEqualTo("Терапевт");
+        assertThat(saved.getCertificateData()).isEqualTo("pdf-content".getBytes());
     }
 }
