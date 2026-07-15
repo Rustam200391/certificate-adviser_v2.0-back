@@ -36,5 +36,5 @@ databaseChangeLog:
                   name: doctor_specialization
                   type: VARCHAR(150)
               - column:
-                  name: certificate_data
-                  type: TEXT
+                  name: cert_image
+                  type: BYTEA
