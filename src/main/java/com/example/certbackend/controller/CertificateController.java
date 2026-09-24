@@ -3,13 +3,14 @@ package com.example.certbackend.controller;
 import com.example.certbackend.dto.CertificateCreateDto;
 import com.example.certbackend.entity.Certificate;
 import com.example.certbackend.service.CertificateService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import org.springdoc.core.annotations.ParameterObject;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import java.util.List;
 public class CertificateController {
 
     private final CertificateService service;
+    private final ObjectMapper objectMapper;
 
     @Operation(summary = "Получить все сертификаты")
     @ApiResponse(responseCode = "200", description = "Список сертификатов",
@@ -52,9 +54,10 @@ public class CertificateController {
             content = @Content(schema = @Schema(implementation = Certificate.class)))
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Certificate> create(
-            @Parameter(description = "Данные сертификата") @Valid @RequestPart CertificateCreateDto dto,
-            @Parameter(description = "Файл сертификата", schema = @Schema(type = "string", format = "binary")) @RequestParam MultipartFile file) {
-        Certificate saved = service.save(dto, file);
+            @Parameter(description = "Данные сертификата в формате JSON") @RequestParam String dto,
+            @Parameter(description = "Файл сертификата", schema = @Schema(type = "string", format = "binary")) @RequestParam MultipartFile file) throws Exception {
+        CertificateCreateDto createDto = objectMapper.readValue(dto, CertificateCreateDto.class);
+        Certificate saved = service.save(createDto, file);
         return ResponseEntity.ok(saved);
     }
 
