@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.Instant;
 
 @Setter
 @Getter
@@ -36,4 +39,8 @@ public class Certificate {
 
     @Column(name = "cert_image")
     private byte[] certificateData;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
 }

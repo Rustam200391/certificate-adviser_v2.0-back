@@ -16,6 +16,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,16 +56,27 @@ class CertificateControllerIntegrationTest {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "cert.pdf", "application/pdf", "pdf-content".getBytes()
         );
-        mockMvc.perform(multipart(POST, "/certificates")
+        mockMvc.perform(multipart(POST, "/api/certificates")
                         .file(file)
                         .param("dto", objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.patientFirstName").value("Иван"))
                 .andExpect(jsonPath("$.patientLastName").value("Иванов"));
 
         List<Certificate> all = repository.findAll();
         assertThat(all).hasSize(1);
+        String createdAt = all.get(0).getCreatedAt().toString();
+
+        mockMvc.perform(get("/api/certificates"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].createdAt").value(createdAt));
+
+        mockMvc.perform(get("/api/certificates/{id}", all.get(0).getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.createdAt").value(createdAt));
+
         Certificate saved = all.get(0);
         assertThat(saved.getPatientFirstName()).isEqualTo("Иван");
         assertThat(saved.getPatientLastName()).isEqualTo("Иванов");

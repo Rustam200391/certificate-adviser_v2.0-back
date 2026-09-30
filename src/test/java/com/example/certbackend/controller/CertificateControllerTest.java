@@ -17,6 +17,8 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Instant;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -54,17 +56,19 @@ class CertificateControllerTest {
         saved.setDoctorFirstName(dto.getDoctorFirstName());
         saved.setDoctorLastName(dto.getDoctorLastName());
         saved.setDoctorSpecialization(dto.getDoctorSpecialization());
+        saved.setCreatedAt(Instant.parse("2025-01-02T03:04:05Z"));
 
         when(service.save(any(CertificateCreateDto.class), any())).thenReturn(saved);
 
         MockMultipartFile file = new MockMultipartFile(
                 "file", "cert.pdf", "application/pdf", "pdf-content".getBytes()
         );
-        mockMvc.perform(multipart(HttpMethod.POST, "/certificates")
+        mockMvc.perform(multipart(HttpMethod.POST, "/api/certificates")
                         .file(file)
                         .param("dto", objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.createdAt").value("2025-01-02T03:04:05Z"))
                 .andExpect(jsonPath("$.patientFirstName").value("Иван"))
                 .andExpect(jsonPath("$.patientLastName").value("Иванов"))
                 .andExpect(jsonPath("$.doctorFirstName").value("Пётр"))
