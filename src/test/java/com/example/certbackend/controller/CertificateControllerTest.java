@@ -3,11 +3,13 @@ package com.example.certbackend.controller;
 import com.example.certbackend.dto.CertificateCreateDto;
 import com.example.certbackend.entity.Certificate;
 import com.example.certbackend.service.CertificateService;
+import com.example.certbackend.config.AppConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
@@ -24,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CertificateController.class)
+@Import(AppConfig.class)
 class CertificateControllerTest {
 
     @Autowired
@@ -57,13 +60,9 @@ class CertificateControllerTest {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "cert.pdf", "application/pdf", "pdf-content".getBytes()
         );
-        MockMultipartFile dtopart = new MockMultipartFile(
-                "dto", "", "application/json", objectMapper.writeValueAsBytes(dto)
-        );
-
         mockMvc.perform(multipart(HttpMethod.POST, "/certificates")
                         .file(file)
-                        .file(dtopart))
+                        .param("dto", objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.patientFirstName").value("Иван"))

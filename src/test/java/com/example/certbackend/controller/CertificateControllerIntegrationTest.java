@@ -20,7 +20,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "spring.datasource.url=jdbc:h2:mem:certificates-test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
+        "spring.datasource.username=sa",
+        "spring.datasource.password=",
+        "spring.datasource.driver-class-name=org.h2.Driver"
+})
 @AutoConfigureMockMvc
 class CertificateControllerIntegrationTest {
 
@@ -50,13 +55,9 @@ class CertificateControllerIntegrationTest {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "cert.pdf", "application/pdf", "pdf-content".getBytes()
         );
-        MockMultipartFile dtopart = new MockMultipartFile(
-                "dto", "", "application/json", objectMapper.writeValueAsBytes(dto)
-        );
-
         mockMvc.perform(multipart(POST, "/certificates")
                         .file(file)
-                        .file(dtopart))
+                        .param("dto", objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.patientFirstName").value("Иван"))

@@ -20,8 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/certificates")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping({"/certificates", "/api/certificates"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
 @RequiredArgsConstructor
 @Tag(name = "Certificates", description = "API для управления сертификатами")
 public class CertificateController {
