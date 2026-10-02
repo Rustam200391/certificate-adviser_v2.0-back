@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.Instant;
 
@@ -40,7 +41,21 @@ public class Certificate {
     @Column(name = "cert_image")
     private byte[] certificateData;
 
+    @JsonIgnore
+    @Column(name = "document_data")
+    private byte[] documentData;
+
+    @Column(name = "document_name", length = 255)
+    private String documentName;
+
+    @Column(name = "document_content_type", length = 100)
+    private String documentContentType;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by")
+    private User createdBy;
 }

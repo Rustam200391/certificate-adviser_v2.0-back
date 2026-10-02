@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-add-certificate-document
+      author: dev
+      changes:
+        - addColumn:
+            tableName: certificates
+            columns:
+              - column:
+                  name: document_data
+                  type: BYTEA
+              - column:
+                  name: document_name
+                  type: VARCHAR(255)
+              - column:
+                  name: document_content_type
+                  type: VARCHAR(100)

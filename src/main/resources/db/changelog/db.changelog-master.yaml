@@ -7,4 +7,10 @@ databaseChangeLog:
 
   - include:
       file: db/changelog/changeset/002-add-created-at-to-certificates.yaml
+  - include:
+      file: db/changelog/changeset/003-add-certificate-document.yaml
       relativeToChangelogFile: false
+  - include:
+      file: db/changelog/changeset/004-add-users-and-certificate-owner.yaml
+      relativeToChangelogFile: false
+

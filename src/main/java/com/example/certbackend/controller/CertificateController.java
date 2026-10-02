@@ -1,6 +1,7 @@
 package com.example.certbackend.controller;
 
 import com.example.certbackend.dto.CertificateCreateDto;
+import com.example.certbackend.dto.QrPlacementDto;
 import com.example.certbackend.entity.Certificate;
 import com.example.certbackend.service.CertificateService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +14,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping({"/certificates", "/api/certificates"})
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "http://localhost:5174"})
 @RequiredArgsConstructor
 @Tag(name = "Certificates", description = "API для управления сертификатами")
 public class CertificateController {
@@ -55,10 +59,41 @@ public class CertificateController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Certificate> create(
             @Parameter(description = "Данные сертификата в формате JSON") @RequestParam String dto,
-            @Parameter(description = "Файл сертификата", schema = @Schema(type = "string", format = "binary")) @RequestParam MultipartFile file) throws Exception {
+            @Parameter(description = "Файл сертификата", schema = @Schema(type = "string", format = "binary")) @RequestParam(value = "file", required = false) MultipartFile file) throws Exception {
         CertificateCreateDto createDto = objectMapper.readValue(dto, CertificateCreateDto.class);
         Certificate saved = service.save(createDto, file);
         return ResponseEntity.ok(saved);
+    }
+
+    @PutMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Certificate> updateImage(@PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+        return service.updateImage(id, file).map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PutMapping(value = "/{id}/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Certificate> updateDocument(@PathVariable Long id,
+            @RequestPart("file") MultipartFile file,
+            @RequestPart("placement") QrPlacementDto placement) {
+        return service.updateDocument(id, file, placement).map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/document")
+    public ResponseEntity<byte[]> getDocument(@PathVariable Long id) {
+        return service.getById(id).map(certificate -> {
+            byte[] document = certificate.getDocumentData();
+            if (document == null || document.length == 0) {
+                return ResponseEntity.notFound().<byte[]>build();
+            }
+            String filename = certificate.getDocumentName() == null ? "document.pdf" : certificate.getDocumentName();
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            ContentDisposition.attachment().filename(filename).build().toString())
+                    .body(document);
+        }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @Operation(summary = "Удалить сертификат по ID")
