@@ -1,8 +1,11 @@
 package com.example.certbackend.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -22,4 +25,6 @@ public class CertificateCreateDto {
 
     private String doctorSpecialization;
 
+    @NotNull(message = "Issue date is required")
+    private LocalDate issueDate;
 }

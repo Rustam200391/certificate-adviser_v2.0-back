@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-add-certificate-dates
+      author: dev
+      changes:
+        - addColumn:
+            tableName: certificates
+            columns:
+              - column:
+                  name: issue_date
+                  type: DATE
+              - column:
+                  name: expiry_date
+                  type: DATE

@@ -13,4 +13,6 @@ databaseChangeLog:
   - include:
       file: db/changelog/changeset/004-add-users-and-certificate-owner.yaml
       relativeToChangelogFile: false
-
+  - include:
+      file: db/changelog/changeset/005-add-certificate-dates.yaml
+      relativeToChangelogFile: false

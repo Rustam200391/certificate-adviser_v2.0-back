@@ -1,13 +1,14 @@
 package com.example.certbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Setter
 @Getter
@@ -37,6 +38,12 @@ public class Certificate {
 
     @Column(name = "doctor_specialization", length = 150)
     private String doctorSpecialization;
+
+    @Column(name = "issue_date")
+    private LocalDate issueDate;
+
+    @Column(name = "expiry_date")
+    private LocalDate expiryDate;
 
     @Column(name = "cert_image")
     private byte[] certificateData;
